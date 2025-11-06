@@ -5,6 +5,11 @@
 #include <cassert> 
 #include "matrix.hpp"
 
+Matrix::Matrix() : row(0), col(0) {
+    // Default constructor: creates an empty 0x0 matrix.
+    // The data vector is left empty by default.
+}
+
 Matrix::Matrix(int rows, int cols) : row(rows), col(cols) {
     if (rows <= 0 || cols <= 0) {
         throw std::invalid_argument("Matrix dimensions must be positive.");

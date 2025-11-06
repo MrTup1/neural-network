@@ -64,6 +64,8 @@ public:
     double update(const Matrix& target);
 
     // --- Utility Functions ---
+    
+    const Matrix& getActivationAt(int layer) const;
 
     /**
      * @brief Prints the dimensions of all weights and biases.

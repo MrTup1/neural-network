@@ -1,87 +1,80 @@
-#include <vector>
 #include <iostream>
-#include <random>
+#include <vector>
+#include <stdexcept>
+
+// Include your two libraries
 #include "matrix.hpp"
+#include "neuralNetwork.hpp"
 
+/**
+ * @file main.cpp
+ * @brief A test program for Section 3.2 of the lab.
+ *
+ * This program verifies that the NeuralNetwork class can be
+ * constructed and that the feedForward function works as expected.
+ *
+ */
 int main() {
-    std::cout << "--- Matrix Class Test Program ---" << std::endl << std::endl;
+    std::cout << "--- NeuralNetwork Class Test Program ---" << std::endl << std::endl;
 
-    //Test Manual setup:
-    std::cout << "Manual setting matrix values of 'C':" <<std::endl;
-    Matrix c(2, 2);
-    c(0, 0) = 1.0;
-    c(0, 1) = 2.0;
-    c(1, 0) = 3.0;
-    c(1, 1) = 4.0;
-    c.print();
-
-    // --- 1. Test Constructor and Randomize ---
-    std::cout << "1. Creating and randomizing a 3x3 matrix 'A'..." << std::endl;
-    Matrix a(3, 3);
-    a.randomize();
-    a.print();
-
-    std::cout << "2. Creating and randomizing a 3x3 matrix 'B'..." << std::endl;
-    Matrix b(3, 3);
-    b.randomize();
-    b.print();
-
-    // --- 2. Test Matrix Addition ---
-    std::cout << "3. Testing Matrix Addition (A + B)..." << std::endl;
     try {
-        Matrix c = a + b; // Uses operator+
-        c.print();
-    } catch (const std::exception& e) {
-        std::cerr << "Addition Error: " << e.what() << std::endl;
-    }
+        // --- 1. Test Constructor ---
+        // As per Section 3.4, we're building a 4-bit decoder.
+        // Input = 4 nodes, Output = 16 nodes.
+        // Let's add one hidden layer of 8 nodes.
+        std::vector<int> topology = {4, 10, 16};
+        
+        std::cout << "1. Creating a {4, 10, 16} network..." << std::endl;
+        NeuralNetwork nn(topology, 0.1); // Learning rate 0.1
+        nn.print(); // Use our utility function to check
+        std::cout << "   ...Network created successfully." << std::endl << std::endl;
 
-    // --- 3. Test Matrix Multiplication ---
-    std::cout << "4. Testing Matrix Multiplication (A * B)..." << std::endl;
-    try {
-        Matrix d = a * b; // Uses operator*
-        d.print();
-    } catch (const std::exception& e) {
-        std::cerr << "Multiplication Error: " << e.what() << std::endl;
-    }
 
-    // --- 4. Test Transpose ---
-    std::cout << "5. Testing Transpose (transpose(A))..." << std::endl;
-    try {
-        Matrix a_t = Matrix::transpose(a);
-        a_t.print();
+        // --- 2. Test feedForward ---
+        std::cout << "2. Testing feedForward function..." << std::endl;
+        
+        // Create a sample 4-bit input (e.g., 1010)
+        std::vector<double> input_vec = {1.0, 0.0, 1.0, 0.0};
+        Matrix input = Matrix::fromVector(input_vec); // Convert to 4x1 Matrix
+        
+        std::cout << "Input (4x1):" << std::endl;
+        input.print();
+
+        // Feed the input through the network
+        Matrix output = nn.feedForward(input);
+
+        std::cout<< "Hidden (10x1):" << std::endl;
+        Matrix middle = nn.getActivationAt(1);
+        middle.print();
+
+        std::cout << "Output (16x1):" << std::endl;
+        output.print();
+
+        // --- 3. Verify Output Dimensions ---
+        if (output.getRows() == 16 && output.getCols() == 1) {
+            std::cout << "   ...Output dimensions are correct (16x1)!" << std::endl << std::endl;
+        } else {
+            std::cout << "   *** ERROR: Output dimensions are (" 
+                      << output.getRows() << "x" << output.getCols() 
+                      << "), expected (16x1)." << std::endl << std::endl;
+        }
+
+        // --- 4. Test Error Handling ---
+        std::cout << "3. Testing error handling with bad input (2x1)..." << std::endl;
+        try {
+            std::vector<double> bad_input_vec = {1.0, 0.0};
+            Matrix bad_input = Matrix::fromVector(bad_input_vec);
+            nn.feedForward(bad_input);
+            std::cout << "   *** ERROR: Network did not throw error on bad input." << std::endl;
+        } catch (const std::exception& e) {
+            std::cout << "   ...Caught expected error: " << e.what() << std::endl;
+        }
+
     } catch (const std::exception& e) {
-        std::cerr << "Transpose Error: " << e.what() << std::endl;
+        std::cerr << "An unexpected error occurred: " << e.what() << std::endl;
+        return 1;
     }
     
-    // --- 5. Test Non-matching dimensions ---
-    std::cout << "6. Testing error handling (3x3 + 2x2)..." << std::endl;
-    try {
-        Matrix e(2, 2);
-        Matrix f = a + e;
-        f.print(); // This shouldn't be reached
-    } catch (const std::exception& e) {
-        std::cerr << "Caught Expected Error: " << e.what() << std::endl << std::endl;
-    }
-    /*
-    // --- 6. Test Sigmoid ---
-    std::cout << "7. Testing Sigmoid function on matrix 'A'..." << std::endl;
-    a.sigmoid();
-    a.print();
-    
-    std::cout << "8. Testing dSigmoid function on (sigmoided) matrix 'A'..." << std::endl;
-    Matrix a_dsig = a.dSigmoid();
-    a_dsig.print();
-    */
-    std::cout << "9. Testing scaling on matrix 'A'..." << std::endl;  
-    Matrix a_Scale = a;
-    a_Scale.scale(3.0);
-    a_Scale.print();
-
-    std::cout << "10. Element wise multplication on matrix 'A'and 'B'..." << std::endl;  
-    Matrix a_ElementWise = a.multiplyElementWise(a, b);
-    a_ElementWise.print();
-
-    std::cout << "--- Test Complete ---" << std::endl;
-
+    std::cout << std::endl << "--- Test Complete ---" << std::endl;
     return 0;
 }

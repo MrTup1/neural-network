@@ -13,6 +13,7 @@ class Matrix
         int row;
         int col;
     public:
+        Matrix();
         Matrix(int rows, int cols);
 
         int getRows() const;
