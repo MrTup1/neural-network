@@ -120,7 +120,7 @@ double NeuralNetwork::update(const Matrix& target) {
         Matrix weights_T = Matrix::transpose(weights[i]);
         negativeError = weights_T * unscaled_gradient;
         
-        /*
+        /*//Momentum Code
         weight_velocities[i].scale(this->momentum);
         weight_velocities[i] = weight_velocities[i] - delta_weights;
         bias_velocities[i].scale(this->momentum);
@@ -130,6 +130,7 @@ double NeuralNetwork::update(const Matrix& target) {
         weights[i] = weights[i] + weight_velocities[i];
         biases[i]  = biases[i] + bias_velocities[i]; */
 
+        //Standard SGD Code:
         weights[i] = weights[i] - delta_weights;
         biases[i] = biases[i] - scaled_gradient;
     }
