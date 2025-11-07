@@ -69,6 +69,14 @@ void Matrix::randomize() {
     }
 }
 
+double Matrix::sum() const {
+    double total = 0.0;
+    for (double val : data) { //iterates through every member of the array data 
+        total += val;
+    }
+    return total;
+}
+
 void Matrix::scale(double scalar) {
     for (int i = 0; i < row; ++i) {
         for (int j = 0; j < col; ++j) {
@@ -101,6 +109,22 @@ Matrix Matrix::dSigmoid() {
     return result;
 }
 
+
+Matrix Matrix::sigmoid_nonDestructive(const Matrix& m) {
+    Matrix result(m.row, m.col);
+    for (int i = 0; i < m.data.size(); ++i) {
+        result.data[i] = 1.0 / (1.0 + exp(-m.data[i]));
+    }
+    return result;
+}
+
+Matrix Matrix::dsigmoid_nonDestructive(const Matrix& m) {
+    Matrix result(m.row, m.col);
+    for (int i = 0; i < m.data.size(); ++i) {
+        result.data[i] = m.data[i] * (1.0 - m.data[i]);
+    }
+    return result;
+};
 
 // --- Static Matrix Operations ---
 

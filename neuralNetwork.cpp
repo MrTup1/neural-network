@@ -79,7 +79,34 @@ Matrix NeuralNetwork::feedForward(const Matrix& input) {
 
 double NeuralNetwork::update(const Matrix& target) {
     
-    return 0.0; // Return a dummy loss value for now
+    Matrix output = activations.back();
+    Matrix error = target - activations.back();
+    Matrix negativeError = activations.back() - target;
+    Matrix squared_error = Matrix::multiplyElementWise(error, error);
+    double total_loss = 0.5 * squared_error.sum();
+
+    for (int i = weights.size() - 1; i >= 0; --i) {
+
+        Matrix current_output = activations[i + 1];
+        Matrix derivative = Matrix::dsigmoid_nonDestructive(current_output);
+
+        Matrix unscaled_gradient = Matrix::multiplyElementWise(derivative, negativeError);
+        Matrix scaled_gradient = unscaled_gradient;
+        scaled_gradient.scale(this->training_rate);
+
+        Matrix prev_activation_T = Matrix::transpose(activations[i]);
+        Matrix delta_weights = scaled_gradient * prev_activation_T;
+
+        Matrix weights_T = Matrix::transpose(weights[i]);
+        negativeError = weights_T * unscaled_gradient;
+        
+        
+        //Remember to nudge gradient in opposite direction of gradient descent:
+        weights[i] = weights[i] - delta_weights;
+        biases[i] = biases[i] - scaled_gradient;
+    }
+
+    return total_loss; 
 }
 
 // --- Utility Functions ---
