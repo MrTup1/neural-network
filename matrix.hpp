@@ -24,6 +24,7 @@ class Matrix
 
         void print() const; //print function for debugging matrix content 
         void randomize(); //generate random values for the starting matrix
+        void fill(double value);
 
         void scale(double scalar); //Scales all values within the matrix
         double sum() const;
@@ -31,8 +32,11 @@ class Matrix
         void sigmoid();
         Matrix dSigmoid();
 
+        void reLu();
+
         static Matrix sigmoid_nonDestructive(const Matrix& m);
         static Matrix dsigmoid_nonDestructive(const Matrix& m);
+        static Matrix dreLu_nonDestructive(const Matrix& m);
 
         static Matrix add(const Matrix& a, const Matrix& b);
         static Matrix subtract(const Matrix& a, const Matrix& b);

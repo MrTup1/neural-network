@@ -68,6 +68,15 @@ void Matrix::randomize() {
     }
 }
 
+void Matrix::fill(double value) {
+    for (int i = 0; i < row; ++i) {
+        for (int j = 0; j < col; ++j) {
+            // Use the operator() accessor to set the value
+            (*this)(i, j) = value;
+        }
+    }
+}
+
 double Matrix::sum() const {
     double total = 0.0;
     for (double val : data) { //iterates through every member of the array data 
@@ -91,6 +100,19 @@ void Matrix::sigmoid() {
         for (int j = 0; j < col; ++j) {
             double& val = (*this)(i, j); // Get reference
             val = 1.0 / (1.0 + exp(-val));
+        }
+    }
+}
+
+void Matrix::reLu() {
+    for (int i = 0; i < row; ++i) {
+        for (int j = 0; j < col; ++j) {
+            double& val = (*this)(i, j); // Get reference
+            if (val > 0) {
+                val = val;
+            } else {
+                val = 0;
+            }
         }
     }
 }
@@ -124,6 +146,19 @@ Matrix Matrix::dsigmoid_nonDestructive(const Matrix& m) {
     }
     return result;
 };
+
+Matrix Matrix::dreLu_nonDestructive(const Matrix& m) {
+    Matrix result(m.row, m.col);
+    for (int i = 0; i < m.data.size(); ++i) {
+        if (m.data[i] > 0) {
+            result.data[i] = 1;
+        } else {
+            result.data[i] = 0;
+        }
+    }
+    return result;
+};
+
 
 // --- Static Matrix Operations ---
 

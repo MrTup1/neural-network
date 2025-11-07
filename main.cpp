@@ -65,14 +65,13 @@ std::string formatBinary(int n) {
 
 int main() {
     try {
-        // --- 1. Set up Network (using the new "wrapper" API) ---
         double learning_rate = 0.1;
-        NeuralNetwork nn(learning_rate); // Use new empty constructor
+        NeuralNetwork nn(learning_rate); 
         
         // This is the "wrapper function" API from the optional work
-        nn.addLayer(4, "input");   // Input layer (activation name is just a label)
-        nn.addLayer(10, "sigmoid"); // Hidden layer
-        nn.addLayer(16, "sigmoid"); // Output layer
+        nn.addLayer(4, "input");   
+        nn.addLayer(10, "reLu"); 
+        nn.addLayer(16, "sigmoid"); 
         
         std::cout << "Created network using addLayer() wrappers." << std::endl;
         nn.print(); // Print the new topology

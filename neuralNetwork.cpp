@@ -5,38 +5,7 @@
 // --- Constructor ---
 
 NeuralNetwork::NeuralNetwork(double learning_rate) {
-    /*if (topology.size() < 2) {
-        throw std::invalid_argument("Network must have at least an input and output layer.");
-    }
-    
-    this->layer_nodes = topology;*/
     this->training_rate = learning_rate;
-
-    /*// We need one fewer weight/bias matrix than we have layers.
-    int num_weight_matrices = topology.size() - 1;
-    
-    weights.resize(num_weight_matrices);
-    biases.resize(num_weight_matrices);
-    
-    // activations[0] will be the input, so resize for all layers
-    activations.resize(topology.size());
-
-    // Initialize the weights and biases
-    for (int i = 0; i < num_weight_matrices; ++i) {
-        // Get dimensions for this weight matrix
-        int rows = topology[i+1]; // e.g., 8 hidden nodes
-        int cols = topology[i];   // e.g., 4 input nodes
-        
-        // --- Initialize weights[i] ---
-        // A (rows x cols) matrix, e.g., (8x4)
-        weights[i] = Matrix(rows, cols);
-        weights[i].randomize(); // Fill with random values [-1.0, 1.0]
-
-        // --- Initialize biases[i] ---
-        // A (rows x 1) column vector
-        biases[i] = Matrix(rows, 1);
-        biases[i].randomize(); // Fill with random values
-    }*/
 }
 
 void NeuralNetwork::addLayer(int node_count, const std::string& activation) {
@@ -65,7 +34,11 @@ void NeuralNetwork::addLayer(int node_count, const std::string& activation) {
 
         // Create new bias vector: (current_layer_nodes x 1)
         Matrix b(curr_layer_node_count, 1);
-        b.randomize();
+        if (activation == "reLu") {
+            b.fill(0.001);
+        } else {            
+            b.randomize();
+        }
         biases.push_back(b); // Add to our list of bias matrices
     }
 }
@@ -90,10 +63,9 @@ Matrix NeuralNetwork::feedForward(const Matrix& input) {
         if (act_func == "sigmoid") {
             layer_output.sigmoid(); // Use in-place sigmoid
         }
-        // --- BONUS (This is where you'd add more) ---
-        // else if (act_func == "relu") {
-        //     layer_output.relu(); 
-        // }
+        else if (act_func == "reLu") {
+            layer_output.reLu();
+        }
         
         activations[i+1] = layer_output;
     }
@@ -120,9 +92,9 @@ double NeuralNetwork::update(const Matrix& target) {
             derivative = Matrix::dsigmoid_nonDestructive(current_output);
         }
         // --- BONUS (This is where you'd add more) ---
-        // else if (act_func == "relu") {
-        //     derivative = Matrix::drelu_nonDestructive(current_output);
-        // }
+        else if (act_func == "reLu") {
+             derivative = Matrix::dreLu_nonDestructive(current_output);
+        }
         else {
             // Default to sigmoid if unknown, or throw error
             derivative = Matrix::dsigmoid_nonDestructive(current_output);
