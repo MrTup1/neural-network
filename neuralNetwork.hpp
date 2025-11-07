@@ -36,7 +36,11 @@ private:
     /**
      * @brief The learning rate for backpropagation.
      */
+
+    std::vector<Matrix> weight_velocities;
+    std::vector<Matrix> bias_velocities;   
     double training_rate;
+    double momentum;
 
 public:
     // --- Constructor ---

@@ -65,7 +65,7 @@ std::string formatBinary(int n) {
 
 int main() {
     try {
-        double learning_rate = 0.1;
+        double learning_rate = 0.05;
         NeuralNetwork nn(learning_rate); 
         
         // This is the "wrapper function" API from the optional work

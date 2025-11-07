@@ -6,6 +6,7 @@
 
 NeuralNetwork::NeuralNetwork(double learning_rate) {
     this->training_rate = learning_rate;
+    this->momentum = 0.9;
 }
 
 void NeuralNetwork::addLayer(int node_count, const std::string& activation) {
@@ -40,6 +41,14 @@ void NeuralNetwork::addLayer(int node_count, const std::string& activation) {
             b.randomize();
         }
         biases.push_back(b); // Add to our list of bias matrices
+
+        Matrix vw(curr_layer_node_count, prev_layer_node_count);
+        vw.fill(0.0);
+        weight_velocities.push_back(vw);
+
+        Matrix vb(curr_layer_node_count, 1);
+        vb.fill(0.0);
+        bias_velocities.push_back(vb);
     }
 }
 
@@ -112,9 +121,17 @@ double NeuralNetwork::update(const Matrix& target) {
         negativeError = weights_T * unscaled_gradient;
         
         
-        //Remember to nudge gradient in opposite direction of gradient descent:
-        weights[i] = weights[i] - delta_weights;
-        biases[i] = biases[i] - scaled_gradient;
+        weight_velocities[i].scale(this->momentum);
+        weight_velocities[i] = weight_velocities[i] - delta_weights;
+        bias_velocities[i].scale(this->momentum);
+        bias_velocities[i] = bias_velocities[i] - scaled_gradient;
+
+        // 2. Update weights using the new velocities instead of the raw gradient
+        weights[i] = weights[i] + weight_velocities[i];
+        biases[i]  = biases[i] + bias_velocities[i]; 
+
+        //weights[i] = weights[i] - delta_weights;
+        //biases[i] = biases[i] - scaled_gradient;
     }
 
     return total_loss; 
