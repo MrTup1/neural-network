@@ -52,24 +52,9 @@ Matrix NeuralNetwork::feedForward(const Matrix& input) {
 
     // Loop through each layer (starting after the input layer)
     for (int i = 0; i < weights.size(); ++i) {        
-        std::cout << "--- Weights for Layer " << i << " ---" << std::endl;
-        weights[i].print();
-
         Matrix layer_output = weights[i] * activations[i]; 
-        std::cout << "--- W * A for Layer " << i << " ---" << std::endl;
-        layer_output.print();
-
-        std::cout << "--- Bias for Layer " << i << " ---" << std::endl;
-        biases[i].print();
-
         layer_output = layer_output + biases[i];
-        std::cout << "--- W * A + B for Layer " << i << " ---" << std::endl;
-        layer_output.print();
-
         layer_output.sigmoid();
-        std::cout << "--- Final activation after sigmoid for Layer " << i << " ---" << std::endl;
-        layer_output.print();
-
         activations[i+1] = layer_output;
     }
 

@@ -44,11 +44,10 @@ const double& Matrix::operator()(int r, int c) const {
 // --- Utility Functions ---
 
 void Matrix::print() const {
-    std::cout << "Matrix (" << row << "x" << col << ")" << std::endl;
     for (int i = 0; i < row; ++i) {
         for (int j = 0; j < col; ++j) {
             // Use the const operator() accessor
-            std::cout << std::fixed << std::setprecision(4) << std::setw(8) << (*this)(i, j) << " ";
+            std::cout << i << "-->"<< std::fixed << std::setprecision(4) << std::setw(8) << (*this)(i, j) << " ";
         }
         std::cout << std::endl;
     }

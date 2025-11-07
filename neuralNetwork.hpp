@@ -72,6 +72,7 @@ public:
      * Useful for debugging.
      */
     void print() const;
+
 };
 
 #endif // NEURALNETWORK_H
