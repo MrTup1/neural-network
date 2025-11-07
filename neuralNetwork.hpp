@@ -14,6 +14,8 @@ private:
      */
     std::vector<int> layer_nodes;
 
+    std::vector<std::string> layer_activations;
+
     /**
      * @brief A list of Weight matrices. weights[i] is the matrix
      * connecting layer i and layer i+1.
@@ -45,7 +47,9 @@ public:
      * from input to output (e.g., {4, 8, 16}).
      * @param learning_rate The learning rate to use for training.
      */
-    NeuralNetwork(const std::vector<int>& topology, double learning_rate);
+    NeuralNetwork(double learning_rate);
+
+    void addLayer(int node_count, const std::string& activation);
 
     // --- Core Functions ---
 

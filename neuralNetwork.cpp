@@ -4,15 +4,15 @@
 
 // --- Constructor ---
 
-NeuralNetwork::NeuralNetwork(const std::vector<int>& topology, double learning_rate) {
-    if (topology.size() < 2) {
+NeuralNetwork::NeuralNetwork(double learning_rate) {
+    /*if (topology.size() < 2) {
         throw std::invalid_argument("Network must have at least an input and output layer.");
     }
     
-    this->layer_nodes = topology;
+    this->layer_nodes = topology;*/
     this->training_rate = learning_rate;
 
-    // We need one fewer weight/bias matrix than we have layers.
+    /*// We need one fewer weight/bias matrix than we have layers.
     int num_weight_matrices = topology.size() - 1;
     
     weights.resize(num_weight_matrices);
@@ -36,6 +36,37 @@ NeuralNetwork::NeuralNetwork(const std::vector<int>& topology, double learning_r
         // A (rows x 1) column vector
         biases[i] = Matrix(rows, 1);
         biases[i].randomize(); // Fill with random values
+    }*/
+}
+
+void NeuralNetwork::addLayer(int node_count, const std::string& activation) {
+    // 1. Store the new layer's info
+    layer_nodes.push_back(node_count);
+    layer_activations.push_back(activation);
+
+    // 2. Resize the 'activations' vector to make room for this layer's output
+    //    We do this every time to keep it in sync with layer_nodes.
+    activations.resize(layer_nodes.size());
+
+    // 3. If this is the *first* layer (Input Layer), we don't create weights.
+    //    We only create weights *connecting* layers.
+    if (layer_nodes.size() > 1) {
+        // This is a hidden or output layer.
+        // We must create the weights and biases connecting the *previous* layer
+        // to *this* new layer.
+        
+        int prev_layer_node_count = layer_nodes[layer_nodes.size() - 2];
+        int curr_layer_node_count = node_count; // same as layer_nodes.back()
+
+        // Create new weight matrix: (current_layer_nodes x prev_layer_nodes)
+        Matrix w(curr_layer_node_count, prev_layer_node_count);
+        w.randomize();
+        weights.push_back(w); // Add to our list of weight matrices
+
+        // Create new bias vector: (current_layer_nodes x 1)
+        Matrix b(curr_layer_node_count, 1);
+        b.randomize();
+        biases.push_back(b); // Add to our list of bias matrices
     }
 }
 
@@ -54,7 +85,16 @@ Matrix NeuralNetwork::feedForward(const Matrix& input) {
     for (int i = 0; i < weights.size(); ++i) {        
         Matrix layer_output = weights[i] * activations[i]; 
         layer_output = layer_output + biases[i];
-        layer_output.sigmoid();
+        std::string act_func = layer_activations[i + 1]; // +1 because [0] is input
+        
+        if (act_func == "sigmoid") {
+            layer_output.sigmoid(); // Use in-place sigmoid
+        }
+        // --- BONUS (This is where you'd add more) ---
+        // else if (act_func == "relu") {
+        //     layer_output.relu(); 
+        // }
+        
         activations[i+1] = layer_output;
     }
 
@@ -73,7 +113,21 @@ double NeuralNetwork::update(const Matrix& target) {
     for (int i = weights.size() - 1; i >= 0; --i) {
 
         Matrix current_output = activations[i + 1];
-        Matrix derivative = Matrix::dsigmoid_nonDestructive(current_output);
+        Matrix derivative;
+        std::string act_func = layer_activations[i + 1]; // +1 because [0] is input
+
+        if (act_func == "sigmoid") {
+            derivative = Matrix::dsigmoid_nonDestructive(current_output);
+        }
+        // --- BONUS (This is where you'd add more) ---
+        // else if (act_func == "relu") {
+        //     derivative = Matrix::drelu_nonDestructive(current_output);
+        // }
+        else {
+            // Default to sigmoid if unknown, or throw error
+            derivative = Matrix::dsigmoid_nonDestructive(current_output);
+        }
+        // --- END REFACTORED LOGIC ---
 
         Matrix unscaled_gradient = Matrix::multiplyElementWise(derivative, negativeError);
         Matrix scaled_gradient = unscaled_gradient;

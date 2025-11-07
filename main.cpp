@@ -14,10 +14,10 @@
 
 /**
  * @file main.cpp
- * @brief Section 3.4: Train the Neural Network
+ * @brief Section 3.4 & 4 (Optional Work Showcase)
  *
  * This program implements the full training loop for the 4-bit
- * binary decoder task.
+ * binary decoder task using the new "wrapper" API.
  */
 
 // --- Helper Function to Get Network's "Guess" ---
@@ -65,12 +65,18 @@ std::string formatBinary(int n) {
 
 int main() {
     try {
-        // --- 1. Set up Network ---
-        std::vector<int> topology = {4, 10, 16}; // 4-in, 10-hidden, 16-out
+        // --- 1. Set up Network (using the new "wrapper" API) ---
         double learning_rate = 0.1;
-        NeuralNetwork nn(topology, learning_rate);
+        NeuralNetwork nn(learning_rate); // Use new empty constructor
         
-        std::cout << "Created a {4, 10, 16} network." << std::endl;
+        // This is the "wrapper function" API from the optional work
+        nn.addLayer(4, "input");   // Input layer (activation name is just a label)
+        nn.addLayer(10, "sigmoid"); // Hidden layer
+        nn.addLayer(16, "sigmoid"); // Output layer
+        
+        std::cout << "Created network using addLayer() wrappers." << std::endl;
+        nn.print(); // Print the new topology
+
 
         // --- 2. Generate Training Data (4-bit decoder) ---
         std::vector<Matrix> all_inputs;
