@@ -66,6 +66,24 @@ std::string formatBinary(int n) {
 int main() {
     try {
         double learning_rate = 0.05;
+        std::cout << "Enter learning rate for the neural network:" << std::endl;
+        std::string line0;
+        int integerInput0 = 0;
+        std::getline(std::cin, line0);
+
+        try {
+            integerInput0 = std::stoi(line0);
+            std::cout << "Success! Your number is: " << integerInput0 << std::endl;
+            
+        } 
+        // 3. Catch any errors
+        catch (const std::invalid_argument& e) {
+            std::cout << std::endl;
+            std::cout << "Error: That's not a valid number." << std::endl;
+            std::cout << std::endl;
+            return 1;
+        }
+
         NeuralNetwork nn(learning_rate); 
         
         // This is the "wrapper function" API from the optional work
